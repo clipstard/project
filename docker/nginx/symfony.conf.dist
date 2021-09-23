@@ -1,0 +1,50 @@
+upstream php {
+        server php-fpm:9001 weight=10 max_fails=3 fail_timeout=30s;
+}
+
+server {
+    server_name api.ywork.loc;
+    root /var/www/public;
+    listen 80;
+
+    error_page 401 403 404 500 502 503 504 /500.html;
+
+    location /m/ {
+        try_files $uri @rewritem;
+        proxy_read_timeout 300;
+    }
+
+    location / {
+        try_files $uri @rewriteapp;
+        proxy_read_timeout 300;
+    }
+
+    location @rewritem { rewrite ^(.*)$ /m.php/$1 last; }
+    location @rewriteapp { rewrite ^(.*)$ /index.php/$1 last; }
+
+    location ~ ^/m\.php(/|$) {
+        fastcgi_pass php;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+        fastcgi_read_timeout 300;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param HTTPS off;
+    }
+
+    location ~ ^/index\.php(/|$) {
+        fastcgi_pass php;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+        fastcgi_read_timeout 300;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param HTTPS off;
+    }
+
+    location ~ ^/.*\.(css|js|jpe?g|png|ico|pdf|PDF)$ {
+        expires 7d;
+    }
+
+    error_log /var/log/nginx/ywork_error.log;
+    access_log /var/log/nginx/ywork_access.log;
+
+}

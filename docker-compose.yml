@@ -1,0 +1,72 @@
+version: '3'
+services:
+    db:
+        build:
+            context: ./docker/mariadb
+        restart: unless-stopped
+        environment:
+            MYSQL_ROOT_PASSWORD: admin
+            MYSQL_DATABASE: admin
+            MYSQL_USER: admin
+            MYSQL_PASSWORD: admin
+            MARIADB_ROOT_HOST: '%'
+            MYSQL_ROOT_HOST: '%'
+        container_name: project-db
+        networks:
+            mynet:
+                ipv4_address: 192.168.0.6
+        ports:
+            - "3306:3306"
+        expose:
+            - 3306
+
+    php-fpm:
+        build:
+            context: ./docker/php-fpm
+            args:
+                - INSTALL_XDEBUG=false
+                - XDEBUG_REMOTE_HOST=127.0.0.1
+                - XDEBUG_REMOTE_PORT=9000
+                - XDEBUG_IDE_KEY=project
+                - UID=1001
+                - GID=1001
+        volumes:
+            - ./symfony:/var/www/symfony
+        networks:
+            mynet:
+                ipv4_address: 192.168.0.4
+        container_name: project-php
+        working_dir: /var/www/symfony
+        restart: unless-stopped
+        expose:
+            - 9001
+        depends_on:
+            - db
+
+    nginx:
+        build:
+            context: ./docker/nginx
+            args:
+                - UID=1001
+                - GID=1001
+        container_name: project-nginx
+        volumes:
+            - ./symfony:/var/www/symfony
+        restart: unless-stopped
+        networks:
+            mynet:
+                ipv4_address: 192.168.0.3
+        working_dir: /var/www/symfony
+        depends_on:
+            - php-fpm
+        ports:
+            - "80:80"
+        expose:
+            - 80
+
+networks:
+    mynet:
+        external: true
+
+
+#    docker network create --subnet=192.168.0.0/24 --ip-range=192.168.0.0/24 --gateway=192.168.0.1 mynet

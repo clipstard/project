@@ -1,0 +1,35 @@
+
+###> symfony/framework-bundle ###
+/symfony/.env.dist
+/symfony/.env.local
+/symfony/.env.local.php
+/symfony/.env.*.local
+/symfony/public/bundles/
+/symfony/var/
+/symfony/vendor/
+/symfony/reports/*
+!/symfony/reports/.gitkeep
+###< symfony/framework-bundle ###
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# System Files
+.DS_Store
+Thumbs.db
+
+
+# Process
