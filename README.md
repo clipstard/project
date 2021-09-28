@@ -13,3 +13,4 @@
 ### For each database changes (Entity modification)
 1. Run `docker exec -it project-php /bin/bash`
 2. Inside container run `bin/console d:s:u --force`
+
