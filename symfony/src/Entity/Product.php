@@ -14,4 +14,9 @@ class Product
      * @ORM\Column(type="integer")
      */
     protected $id;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    protected $name;
 }
