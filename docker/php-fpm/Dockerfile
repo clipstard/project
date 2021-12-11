@@ -1,4 +1,4 @@
-FROM php:7.3-fpm-stretch
+FROM php:8.0.13-fpm
 MAINTAINER Patrick Coustans <patrick@tekoway.com>
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -42,7 +42,7 @@ COPY apt_speedup /etc/dpkg/dpkg.cfg.d/02_apt-speedup
 # install usefull binaries
 # ------------------------------
 RUN apt-get -yqq update && \
-    apt-get install -yqq --no-install-recommends git imagemagick libmagickwand-dev openssh-client \
+    apt-get install -yqq --no-install-recommends git imagemagick libmagickwand-dev openssh-client libonig-dev \
                                                  unzip libpcre3 libfcgi0ldbl \
                                                  libpcre3-dev libssl-dev \
                                                  jq vim zip libzip-dev \
@@ -55,8 +55,8 @@ RUN apt-get -yqq update && \
 # ------------------------------
 RUN docker-php-ext-install exif intl opcache mbstring pdo_mysql mysqli bcmath && \
     # docker-php-ext-install soap && \
-    docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && docker-php-ext-install -j$(nproc) gd && \
-    docker-php-ext-configure zip --with-libzip && docker-php-ext-install zip
+    docker-php-ext-configure gd && docker-php-ext-install -j$(nproc) gd && \
+    docker-php-ext-configure zip && docker-php-ext-install zip
     # imagick
     # redis
 
