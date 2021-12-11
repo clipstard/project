@@ -33,3 +33,5 @@ Thumbs.db
 !.gitattributes
 
 # Process
+
+docker-compose.yml
