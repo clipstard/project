@@ -1,7 +1,0 @@
-{
-  "require": {
-    "ext-json": "*",
-    "ext-curl": "*",
-    "ext-http": "*"
-  }
-}
