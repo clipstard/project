@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Product;
-use App\Repository\ProductRepository;
+use App\Entity\Admin;
+use App\Entity\Professor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,10 +14,16 @@ class HomeController extends AbstractController
     /** @Route(name="home", path="/home")  */
     public function __invoke()
     {
+        $admin = new Professor();
+        $admin->setEmail('professor@admin.me')
+            ->setName('professor')
+            ->setPassword('asd')
+            ->setPlainPassword('asd');
+
         $em = $this->getDoctrine()->getManager();
-        /** @var ProductRepository $repo */
-        $repo = $em->getRepository(Product::class);
-        $repo->findAll();
+        $em->persist($admin);
+        $em->flush();
+
         return new JsonResponse(['succes'=> true]);
     }
 }

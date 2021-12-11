@@ -16,3 +16,11 @@ services:
     App\:
         resource: '../src/*'
         exclude: '../src/{DependencyInjection,Entity,Tests,Kernel.php}'
+
+    App\Listener\TaskListener:
+        tags:
+            - { name: doctrine.event_subscriber }
+
+    App\Listener\UserListener:
+        tags:
+            - { name: doctrine.event_subscriber }

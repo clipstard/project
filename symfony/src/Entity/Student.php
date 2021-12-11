@@ -1,54 +1,99 @@
 <?php
 namespace App\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\StudentRepository")
  */
 #[ApiResource]
-class Student
+class Student extends User
 {
-    use TimestampableEntity;
 
     /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @var Collection|Task[]
+     * @ORM\ManyToMany(targetEntity="Task", mappedBy="assignedTo")
      */
-    public int $id;
+    protected Collection|array $assignedTasks;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var Group|null
+     * @ORM\ManyToOne (targetEntity="Group", inversedBy="students")
+     * @ORM\JoinColumn(referencedColumnName="id", name="group_id", onDelete="SET NULL")
      */
-    public string $name;
+    protected ?Group $group;
 
-    /**
-     * @return int
-     */
-    public function getId(): int
+    public function __construct()
     {
-        return $this->id;
+        parent::__construct();
+        $this->assignedTasks = [];
     }
 
     /**
-     * @return string
+     * @return Collection|Task[]
      */
-    public function getName(): string
+    public function getAssignedTasks(): Collection|array
     {
-        return $this->name;
+        return $this->assignedTasks;
     }
 
     /**
-     * @param string $name
+     * @param Collection|Task[] $assignedTasks
+     * @return $this
+     */
+    public function setAssignedTasks(Collection|array $assignedTasks): self
+    {
+        $this->assignedTasks = $assignedTasks;
+
+        return $this;
+    }
+
+    /**
+     * @param Task $task
+     * @return $this
+     */
+    public function addAssignedTask(Task $task): self
+    {
+        if (!$this->assignedTasks->contains($task)) {
+            $this->assignedTasks->add($task);
+            $task->addAssignedTo($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Task $task
+     * @return $this
+     */
+    public function removeAssignedTask(Task $task): self
+    {
+        if ($this->assignedTasks->contains($task)) {
+            $this->assignedTasks->removeElement($task);
+            $task->removeAssignedTo($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Group|null
+     */
+    public function getGroup(): ?Group
+    {
+        return $this->group;
+    }
+
+    /**
+     * @param Group|null $group
      *
-     * @return Professor
+     * @return Student
      */
-    public function setName(string $name): self
+    public function setGroup(?Group $group): self
     {
-        $this->name = $name;
+        $this->group = $group;
 
         return $this;
     }
