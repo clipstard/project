@@ -1,15 +1,20 @@
 <?php
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiSubresource;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\GroupRepository")
  * @ORM\Table(name="group_table")
  */
-#[ApiResource]
+#[ApiResource(
+    normalizationContext:  ['groups' => ['get', 'put', 'post']],
+)]
 class Group
 {
 
@@ -18,11 +23,13 @@ class Group
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
+    #[Groups(["get", "post", "put"])]
     protected int $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(["get", "post", "put"])]
     protected string $name;
 
     /**
@@ -35,12 +42,13 @@ class Group
      * @var Collection|Task[]
      * @ORM\ManyToMany(targetEntity="Task", mappedBy="groups")
      */
+    #[ApiSubresource]
     protected Collection|array $assignedTasks;
 
     public function __construct()
     {
-        $this->assignedTasks = [];
-        $this->students = [];
+        $this->assignedTasks = new ArrayCollection();
+        $this->students = new ArrayCollection();
     }
 
     /**

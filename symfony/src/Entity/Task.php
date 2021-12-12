@@ -3,17 +3,22 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TaskRepository")
  * @ORM\Table(name="task_table")
  * @ORM\HasLifecycleCallbacks()
  */
-#[ApiResource]
+#[ApiResource(
+    normalizationContext:  ['groups' => ['get', 'put', 'post', 'get_task']],
+)]
 class Task
 {
     use TimestampableEntity;
@@ -23,11 +28,13 @@ class Task
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
+    #[Groups(["get", "post", "put"])]
     protected int $id;
 
     /**
      * @ORM\Column(type="text", name="condition_col")
      */
+    #[Groups(["get", "post", "put"])]
     protected string $condition;
 
     /**
@@ -35,13 +42,15 @@ class Task
      * @ORM\ManyToMany(targetEntity="Variable")
      * @ORM\JoinTable(name="tasks_variables")
      */
+    #[Groups(["get", "post", "put"])]
     protected Collection|array $variables;
 
     /**
      * @var Professor|null $createdBy
      * @ORM\ManyToOne(targetEntity="Professor", inversedBy="tasks")
-     * @ORM\JoinColumn(referencedColumnName="id", nullable=true)
+     * @ORM\JoinColumn(referencedColumnName="id", nullable=true, onDelete="SET NULL")
      */
+    #[ApiSubresource]
     protected ?Professor $createdBy;
 
     /**
@@ -49,6 +58,7 @@ class Task
      * @ORM\ManyToMany(targetEntity="Student", inversedBy="assignedTasks")
      * @ORM\JoinTable(name="students_tasks")
      */
+    #[Groups(['get_task'])]
     protected Collection|array $assignedTo;
 
     /**
@@ -56,12 +66,15 @@ class Task
      * @ORM\ManyToMany(targetEntity="Group", inversedBy="assignedTasks")
      * @ORM\JoinTable(name="groups_tasks")
      */
+    #[ApiSubresource]
+    #[Groups(['get_task'])]
     protected Collection|array $groups;
 
     /**
      * @var bool
      * @ORM\Column(type="boolean", options={"default": "0"})
      */
+    #[Groups(["get", "post", "put"])]
     protected bool $isPublic;
 
     public function __construct()

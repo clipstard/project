@@ -5,6 +5,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ProfessorRepository")
@@ -16,6 +17,7 @@ class Professor extends User
      * @var Task[]|Collection
      * @ORM\OneToMany(targetEntity="Task", mappedBy="createdBy")
      */
+    #[Groups(["get", "post", "put"])]
     protected Collection|array $tasks;
 
     public function __construct()

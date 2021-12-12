@@ -1,14 +1,18 @@
 <?php
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\StudentRepository")
  */
-#[ApiResource]
+#[ApiResource(
+    normalizationContext:  ['groups' => ['get', 'put', 'post']],
+)]
 class Student extends User
 {
 
@@ -16,6 +20,7 @@ class Student extends User
      * @var Collection|Task[]
      * @ORM\ManyToMany(targetEntity="Task", mappedBy="assignedTo")
      */
+    #[Groups(["get_student"])]
     protected Collection|array $assignedTasks;
 
     /**
@@ -23,6 +28,8 @@ class Student extends User
      * @ORM\ManyToOne (targetEntity="Group", inversedBy="students")
      * @ORM\JoinColumn(referencedColumnName="id", name="group_id", onDelete="SET NULL")
      */
+    #[Groups(["get", "post", "put"])]
+    #[ApiSubresource]
     protected ?Group $group;
 
     public function __construct()

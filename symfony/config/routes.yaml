@@ -1,2 +1,13 @@
 api_login_check:
     path: /api/login_check
+
+admin:
+    path: /admin
+    defaults: { _controller: 'App\Controller\UserController::getAdmin' }
+    methods: [ GET ]
+
+me:
+    path: /api/me
+    defaults: { _controller: 'App\Controller\UserController::getMe' }
+    methods: [ GET ]
+

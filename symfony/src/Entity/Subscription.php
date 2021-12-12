@@ -6,10 +6,10 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\NotificationRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\SubscriptionRepository")
  */
 #[ApiResource]
-class Notification
+class Subscription
 {
     use TimestampableEntity;
 
@@ -23,14 +23,13 @@ class Notification
     /**
      * @ORM\Column(type="string", length=255)
      */
-    public string $name;
+    public string $email;
 
     /**
-     * @var User
-     * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(nullable=false, name="target_user_id")
+     * @var string|null
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    protected User $target;
+    protected ?string $token;
 
     /**
      * @return int
@@ -43,39 +42,39 @@ class Notification
     /**
      * @return string
      */
-    public function getName(): string
+    public function getEmail(): string
     {
-        return $this->name;
+        return $this->email;
     }
 
     /**
-     * @param string $name
+     * @param string $email
      *
-     * @return $this
+     * @return Subscription
      */
-    public function setName(string $name): self
+    public function setEmail(string $email): self
     {
-        $this->name = $name;
+        $this->email = $email;
 
         return $this;
     }
 
     /**
-     * @return User
+     * @return string|null
      */
-    public function getTarget(): User
+    public function getToken(): ?string
     {
-        return $this->target;
+        return $this->token;
     }
 
     /**
-     * @param User $target
+     * @param string|null $token
      *
-     * @return Notification
+     * @return Subscription
      */
-    public function setTarget(User $target): self
+    public function setToken(?string $token): self
     {
-        $this->target = $target;
+        $this->token = $token;
 
         return $this;
     }

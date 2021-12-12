@@ -3,6 +3,8 @@
 namespace App\Listener;
 
 
+use App\Entity\Group;
+use App\Entity\Student;
 use App\Entity\User;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -23,15 +25,41 @@ class UserListener implements EventSubscriber
     public function prePersist(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();
+
         if (!$entity instanceof User)
             return;
 
+        if ($entity instanceof Student) {
+            $this->appendGroup($args);
+        }
+
+
         $this->encodePassword($entity);
+    }
+
+    public function appendGroup(LifecycleEventArgs $args)
+    {
+        $em = $args->getEntityManager();
+        $repo = $em->getRepository(Group::class);
+        $group = $repo->findOneBy(['name' => 'Unknown']);
+        /**
+         * @var Student $student
+         */
+        $student = $args->getEntity();
+
+        if (null === $group) {
+            $group = (new Group())->setName('Unknown')
+                ->addStudent($student);
+            $em->persist($group);
+        }
+
+        $group->addStudent($student);
     }
 
     public function preUpdate(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();
+
 
         if (!$entity instanceof User)
             return;

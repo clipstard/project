@@ -4,12 +4,15 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\VariableRepository")
  * @ORM\Table(name="variable_table")
  */
-#[ApiResource]
+#[ApiResource(
+    normalizationContext:  ['groups' => ['get', 'put', 'post']],
+)]
 class Variable
 {
     use TimestampableEntity;
@@ -19,17 +22,20 @@ class Variable
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
+    #[Groups(["get", "post", "put"])]
     protected int $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(["get", "post", "put"])]
     protected string $name;
 
     /**
      * @var string
      * @ORM\Column(type="string", length=255, name="type_col")
      */
+    #[Groups(["get", "post", "put"])]
     protected string $type;
 
     /**
