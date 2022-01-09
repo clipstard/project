@@ -18,7 +18,7 @@ class UserController extends AbstractController
 {
 
     /** @Route(name="getMe", path="/api/me", methods={"GET"})  */
-    public function getMe(Security $security, NormalizerInterface $serializer)
+    public function __invoke(Security $security, NormalizerInterface $serializer)
     {
         return new JsonResponse($serializer->normalize($security->getUser(), 'json', ['groups' => 'get']), Response::HTTP_OK);
     }

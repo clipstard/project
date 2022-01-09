@@ -69,6 +69,13 @@ class Task
     #[Groups(['get_task'])]
     protected Collection|array $groups;
 
+
+    /**
+     * @ORM\Column(type="boolean", options={"default": "0"}, name="is_completed")
+     */
+    #[Groups(["get", "post", "put"])]
+    public bool $completed;
+
     /**
      * @var bool
      * @ORM\Column(type="boolean", options={"default": "0"})
@@ -82,6 +89,7 @@ class Task
         $this->variables = new ArrayCollection();
         $this->groups = new ArrayCollection();
         $this->isPublic = false;
+        $this->completed = false;
     }
 
     /**
@@ -244,6 +252,46 @@ class Task
             $this->groups->removeElement($group);
             $group->removeAssignedTask($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCompleted(): bool
+    {
+        return $this->completed;
+    }
+
+    /**
+     * @param bool $completed
+     *
+     * @return Task
+     */
+    public function setCompleted(bool $completed): self
+    {
+        $this->completed = $completed;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPublic(): bool
+    {
+        return $this->isPublic;
+    }
+
+    /**
+     * @param bool $isPublic
+     *
+     * @return Task
+     */
+    public function setIsPublic(bool $isPublic): self
+    {
+        $this->isPublic = $isPublic;
 
         return $this;
     }
